@@ -1,0 +1,125 @@
+---
+project: social_post
+repository: robertguss/social_post
+license: MIT License
+source_file: docs/archive/prd-better-auth.md
+source_url: https://github.com/robertguss/social_post/blob/c5bbb521b6c6c5bd30a0c37bf75e81024df968a9/docs/archive/prd-better-auth.md
+downloaded_at: 2025-12-05T10:35:06.408236+00:00
+consensus_grade_level: 17.2
+headings_per_sentence: 0.29
+lists_per_sentence: 0.8
+smao_sentences_pct: 0.0
+vague_words_per_sentence: 0.1
+anaphora_per_sentence: 0.16
+sentence_cv: 1.358
+cpre_terms_per_sentence: 0.53
+---
+# Social Posting Scheduler - Better Auth Migration PRD
+
+## Intro Project Analysis and Context
+
+### 1.1 Existing Project Overview
+
+#### Analysis Source
+✅ **IDE-based fresh analysis** - Project files available and analyzed
+
+#### Current Project State
+
+**Social Posting Scheduler** is a self-hosted, single-user social media scheduling application for X/Twitter and LinkedIn. The application is built with:
+
+- **Frontend**: Next.js 15.5.4 (App Router), React 19, Tailwind CSS 4
+- **Backend**: Convex (database, queries, mutations, scheduled actions)
+- **Current Auth**: Clerk (single-user authentication)
+- **Language**: TypeScript throughout
+
+**Core Functionality**:
+- Schedule posts for X/Twitter and LinkedIn with platform-specific content
+- Automated publishing at scheduled times via Convex scheduled functions
+- Draft management with content pre-population
+- Recurring post queues for content recycling
+- Templates for reusable content
+- Analytics and posting time recommendations
+- User preference management
+
+**Current Authentication Architecture**:
+- Better Auth handles authentication on frontend via `middleware.ts`
+- Protected routes: `/server`, `/settings`, `/schedule`, `/history`, `/dashboard`, `/insights`
+- Convex functions verify users with `ctx.auth.getUserIdentity()`
+- All data scoped to `userId` field in 8 database tables
+- Convex integration via Better Auth provider and `convex/auth.config.ts`
+
+### 1.2 Available Documentation Analysis
+
+#### Available Documentation
+✅ **CLAUDE.md** - Comprehensive project documentation including:
+- Architecture overview and critical patterns
+- Data models and schema design
+- Convex function patterns and authentication flow
+- External API integration requirements
+- Security requirements
+
+✅ **Convex Schema** (`convex/schema.ts`) - Complete database schema with 8 tables all using `userId`
+
+✅ **Implementation Files**:
+- `middleware.ts` - Better Auth route protection
+- `convex/auth.config.ts` - Better Auth JWT configuration
+- `app/layout.tsx` - Better Auth provider setup
+- `components/ConvexClientProvider.tsx` - Convex+Better Auth integration
+
+**Documentation Status**: ✅ Sufficient for proceeding with PRD
+
+### 1.3 Enhancement Scope Definition
+
+#### Enhancement Type
+✅ **Technology Stack Upgrade** - Replacing Clerk authentication with Better Auth
+
+#### Enhancement Description
+
+Replace Clerk authentication system with Better Auth across the entire application stack. This involves migrating from Clerk's proprietary authentication to Better Auth, which Convex officially supports via the `@convex-dev/better-auth` integration. The migration will maintain all existing functionality while potentially simplifying the authentication architecture and reducing vendor lock-in.
+
+#### Impact Assessment
+✅ **Major Impact (architectural changes required)**
+
+**Rationale**: This enhancement affects:
+- All 8 database tables (migration from `clerkUserId` to `userId`)
+- All Convex functions (17 files using `ctx.auth.getUserIdentity()`)
+- Frontend authentication providers and middleware
+- Scheduled functions that rely on user identity
+- Existing user data requiring migration
+
+**CRITICAL CONSTRAINT**: Development-only environment with single user - breaking changes and data loss acceptable, enabling clean replacement strategy.
+
+### 1.4 Goals and Background Context
+
+#### Goals
+
+- Replace Clerk with Better Auth without requiring data migration complexity
+- Maintain all existing authentication and authorization patterns
+- Preserve single-user application architecture with proper user scoping
+- Ensure scheduled posts continue functioning after migration
+- Reduce vendor lock-in and simplify authentication architecture
+- Leverage Convex's official Better Auth integration for better ecosystem compatibility
+- Maintain self-hosted architecture philosophy
+
+#### Background Context
+
+The application previously used Clerk for authentication, which worked well but created vendor lock-in and added complexity through its proprietary integration. The migration to Better Auth, which Convex officially supports through the `@convex-dev/better-auth` package (https://github.com/get-convex/better-auth), provides a more open, TypeScript-first authentication solution.
+
+Better Auth is a comprehensive authentication framework for TypeScript that supports email/password, social OAuth, two-factor authentication, and multi-tenant features. It's framework-agnostic and designed for ease of implementation. The migration to Better Auth aligns the application with Convex's evolving ecosystem while maintaining the same security and functionality standards.
+
+This migration is strategically important as it:
+1. Reduces dependency on proprietary authentication services
+2. Simplifies the authentication stack with native Convex integration
+3. Provides more control over authentication logic and user data
+4. Maintains self-hosted architecture philosophy
+
+**Development Context**: Application is in active development with single user (developer only), allowing for breaking changes and schema modifications without migration concerns.
+
+#### Change Log
+
+| Change | Date | Version | Description | Author |
+|--------|------|---------|-------------|--------|
+| Initial Draft | 2025-11-05 | 1.0 | Better Auth migration PRD created | John (PM Agent) |
+
+---
+
